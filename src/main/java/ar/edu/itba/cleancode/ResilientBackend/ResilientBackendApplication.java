@@ -1,4 +1,4 @@
-package ar.edu.itba.cleancode.ResilientBackend;
+package ar.edu.itba.cleancode.resilientbackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
