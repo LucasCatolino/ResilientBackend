@@ -30,12 +30,12 @@ public class SimpleController {
         this.appUserRepository = appUserRepository;
     }
 
-    @GetMapping("/hello2")
+    @GetMapping("/users/health")
     public String hello() {
-        return "Hello world endpoint!";
+        return "Users up!";
     }
 
-    @GetMapping
+    @GetMapping("/users")
     public List<AppUser> getAllUsers() {
         return appUserRepository.findAll();
     }
@@ -45,7 +45,7 @@ public class SimpleController {
         return appUserRepository.findById(id);
     }
 
-    @PostMapping
+    @PostMapping("/users")
     public AppUser addUser(@RequestBody AppUser user) {
         return appUserRepository.save(user);
     }
