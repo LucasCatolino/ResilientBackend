@@ -27,34 +27,42 @@ public class AppUser {
         return this.id;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public void setId(Long id) {
         this.id = id;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public String getName() {
         return this.name;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public void setName(String name) {
         this.name = name;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public String getMail() {
         return this.mail;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public void setMail(String mail) {
         this.mail = mail;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public String getBirthday() {
         return this.birthday;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public void setPassword(String password) {
         this.password = password;
     }
