@@ -52,7 +52,7 @@ public class SimpleController {
 
     @PutMapping("/users/{id}")
     public AppUser updateUser(@PathVariable Long id, @RequestBody AppUser updatedUser) {
-        updatedUser.setId(id); // Ensure the correct ID is set
+        updatedUser.setId(id);
         return appUserRepository.save(updatedUser);
     }
 

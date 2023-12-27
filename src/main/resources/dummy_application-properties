@@ -5,3 +5,30 @@ spring.datasource.password=PASS
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+# Resilience4j properties
+spring.cloud.circuitbreaker.resilience4j.enabled=true
+
+# Resilience4j Circuit Breaker Configuration
+resilience4j.circuitbreaker.configs.default.registerHealthIndicator=true
+resilience4j.circuitbreaker.configs.default.slidingWindowSize=10
+resilience4j.circuitbreaker.configs.default.minimumNumberOfCalls=5
+resilience4j.circuitbreaker.configs.default.permittedNumberOfCallsInHalfOpenState=3
+resilience4j.circuitbreaker.configs.default.automaticTransitionFromOpenToHalfOpenEnabled=true
+resilience4j.circuitbreaker.configs.default.waitDurationInOpenState=5s
+resilience4j.circuitbreaker.configs.default.failureRateThreshold=50
+resilience4j.circuitbreaker.configs.default.eventConsumerBufferSize=10
+resilience4j.circuitbreaker.configs.default.recordExceptions[0]=org.springframework.web.client.HttpServerErrorException
+resilience4j.circuitbreaker.configs.default.recordExceptions[1]=java.util.concurrent.TimeoutException
+resilience4j.circuitbreaker.configs.default.recordExceptions[2]=java.io.IOException
+resilience4j.circuitbreaker.configs.default.ignoreExceptions[0]=io.github.robwin.exception.BusinessException
+
+resilience4j.circuitbreaker.configs.shared.slidingWindowSize=100
+resilience4j.circuitbreaker.configs.shared.permittedNumberOfCallsInHalfOpenState=30
+resilience4j.circuitbreaker.configs.shared.waitDurationInOpenState=1s
+resilience4j.circuitbreaker.configs.shared.failureRateThreshold=50
+resilience4j.circuitbreaker.configs.shared.eventConsumerBufferSize=10
+resilience4j.circuitbreaker.configs.shared.ignoreExceptions[0]=io.github.robwin.exception.BusinessException
+
+# Resilience4j Circuit Breaker Instances
+resilience4j.circuitbreaker.instances.backendUsers.baseConfig=default

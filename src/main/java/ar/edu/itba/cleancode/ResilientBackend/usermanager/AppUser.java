@@ -1,5 +1,6 @@
 package ar.edu.itba.cleancode.resilientbackend.usermanager;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,6 +22,7 @@ public class AppUser {
         return this.password;
     }
 
+    @CircuitBreaker (name = "backendUsers")
     public Long getId() {
         return this.id;
     }
