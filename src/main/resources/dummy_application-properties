@@ -14,7 +14,7 @@ springdoc.swagger-ui.operationsSorter=method
 # Resilience4j properties
 spring.cloud.circuitbreaker.resilience4j.enabled=true
 
-# Resilience4j Circuit Breaker Configuration
+# Circuit Breaker Configuration
 resilience4j.circuitbreaker.configs.default.registerHealthIndicator=true
 resilience4j.circuitbreaker.configs.default.slidingWindowSize=10
 resilience4j.circuitbreaker.configs.default.minimumNumberOfCalls=5
@@ -35,5 +35,38 @@ resilience4j.circuitbreaker.configs.shared.failureRateThreshold=50
 resilience4j.circuitbreaker.configs.shared.eventConsumerBufferSize=10
 resilience4j.circuitbreaker.configs.shared.ignoreExceptions[0]=io.github.robwin.exception.BusinessException
 
-# Resilience4j Circuit Breaker Instances
+# Circuit Breaker Instances
 resilience4j.circuitbreaker.instances.backendUsers.baseConfig=default
+
+# Retry Configurations
+resilience4j.retry.configs.default.maxAttempts=3
+resilience4j.retry.configs.default.waitDuration=100
+resilience4j.retry.configs.default.retryExceptions[0]=org.springframework.web.client.HttpServerErrorException
+resilience4j.retry.configs.default.retryExceptions[1]=java.util.concurrent.TimeoutException
+resilience4j.retry.configs.default.retryExceptions[2]=java.io.IOException
+resilience4j.retry.configs.default.ignoreExceptions[0]=io.github.robwin.exception.BusinessException
+
+resilience4j.retry.instances.backendUsers.baseConfig=default
+
+# Bulkhead Configurations
+resilience4j.bulkhead.configs.default.maxConcurrentCalls=100
+resilience4j.bulkhead.instances.backendUsers.maxConcurrentCalls=10
+
+# Thread Pool Bulkhead Configurations
+resilience4j.thread-pool-bulkhead.configs.default.maxThreadPoolSize=4
+resilience4j.thread-pool-bulkhead.configs.default.coreThreadPoolSize=2
+resilience4j.thread-pool-bulkhead.configs.default.queueCapacity=2
+resilience4j.thread-pool-bulkhead.instances.backendUsers.baseConfig=default
+
+# Rate Limiter Configurations
+resilience4j.ratelimiter.configs.default.registerHealthIndicator=false
+resilience4j.ratelimiter.configs.default.limitForPeriod=10
+resilience4j.ratelimiter.configs.default.limitRefreshPeriod=1s
+resilience4j.ratelimiter.configs.default.timeoutDuration=0
+resilience4j.ratelimiter.configs.default.eventConsumerBufferSize=100
+resilience4j.ratelimiter.instances.backendUsers.baseConfig=default
+
+# Time Limiter Configurations
+resilience4j.timelimiter.configs.default.cancelRunningFuture=false
+resilience4j.timelimiter.configs.default.timeoutDuration=2s
+resilience4j.timelimiter.instances.backendUsers.baseConfig=default

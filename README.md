@@ -8,4 +8,4 @@
 2. ./mvnw spring-boot:run
 
 ## Test
-http://localhost:8080/api/hello
+http://localhost:8080/swagger.html
