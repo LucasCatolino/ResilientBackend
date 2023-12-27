@@ -1,4 +1,4 @@
-package ar.edu.itba.cleancode.resilientbackend;
+package ar.edu.itba.cleancode.resilientbackend.controllers;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,19 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ar.edu.itba.cleancode.resilientbackend.DatabaseConnector;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
 
 
 @RestController
 @RequestMapping("/api")
-public class SimpleController {
+public class UserController {
 
     private final DatabaseConnector databaseConnector;
     private final AppUserRepository appUserRepository;
 
     @Autowired
-    public SimpleController(DatabaseConnector databaseConnector, AppUserRepository appUserRepository) {
+    public UserController(DatabaseConnector databaseConnector, AppUserRepository appUserRepository) {
         this.databaseConnector = databaseConnector;
         this.appUserRepository = appUserRepository;
     }
