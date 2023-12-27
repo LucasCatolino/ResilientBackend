@@ -12,7 +12,7 @@ import jakarta.persistence.Id;
 @Entity
 public class AppUser {
 
-    private static final String BACKENDUSERS = "backendusers";
+    private static final String BACKEND_USERS = "BACKEND_USERS";
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,82 +23,82 @@ public class AppUser {
     private String birthday;
     private String password;
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public Long getId() {
         return this.id;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public void setId(Long id) {
         this.id = id;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public String getName() {
         return this.name;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public void setName(String name) {
         this.name = name;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public String getMail() {
         return this.mail;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public void setMail(String mail) {
         this.mail = mail;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public String getBirthday() {
         return this.birthday;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public void setBirthday(String birthday) {
         this.birthday = birthday;
     }
     
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public String getPassword() {
         return this.password;
     }
 
-    @CircuitBreaker (name = BACKENDUSERS)
-    @TimeLimiter(name = BACKENDUSERS)
-    @Bulkhead(name = BACKENDUSERS)
-    @Retry(name = BACKENDUSERS)
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
     public void setPassword(String password) {
         this.password = password;
     }
