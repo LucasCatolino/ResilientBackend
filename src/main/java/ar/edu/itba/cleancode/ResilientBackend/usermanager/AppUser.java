@@ -16,7 +16,7 @@ public class AppUser {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     private String name;
     private String mail;
@@ -28,7 +28,7 @@ public class AppUser {
     @Bulkhead(name = BACKEND_USERS)
     @Retry(name = BACKEND_USERS)
     public Long getId() {
-        return this.id;
+        return this.userId;
     }
 
     @CircuitBreaker (name = BACKEND_USERS)
@@ -36,7 +36,7 @@ public class AppUser {
     @Bulkhead(name = BACKEND_USERS)
     @Retry(name = BACKEND_USERS)
     public void setId(Long id) {
-        this.id = id;
+        this.userId = id;
     }
 
     @CircuitBreaker (name = BACKEND_USERS)
