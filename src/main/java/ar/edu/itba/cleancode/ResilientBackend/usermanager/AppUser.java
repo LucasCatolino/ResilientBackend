@@ -25,23 +25,19 @@ public class AppUser {
     private String birthday;
     private String password;
 
-    public AppUser (Long id) {
-        this.userId = id;
-    }
-
-    @CircuitBreaker (name = BACKEND_USERS)
+    /*@CircuitBreaker (name = BACKEND_USERS)
     @TimeLimiter(name = BACKEND_USERS)
     @Bulkhead(name = BACKEND_USERS)
-    @Retry(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)*/
     public Long getId() {
         return this.userId; // TODO: ver por qué da null
     }
 
-    @CircuitBreaker (name = BACKEND_USERS)
+    /*@CircuitBreaker (name = BACKEND_USERS)
     @TimeLimiter(name = BACKEND_USERS)
     @Bulkhead(name = BACKEND_USERS)
     @Retry(name = BACKEND_USERS)
-    @JsonIgnore
+    @JsonIgnore*/
     public void setId(Long id) {
         this.userId = id;
     }

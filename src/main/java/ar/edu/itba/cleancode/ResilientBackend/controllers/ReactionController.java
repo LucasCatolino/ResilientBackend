@@ -38,11 +38,10 @@ public class ReactionController {
 
     @PostMapping("/reactions")
     public Reaction addReaction(@RequestBody ReactionRequest request) {
-        Reaction reaction = new Reaction(request.getLike(), request.getTweetId(), request.getUserId());
-        /*reaction.setLike(request.getLike());
+        Reaction reaction = new Reaction();
+        reaction.setLike(request.getLike());
         reaction.setTweetId(request.getTweetId());
-        reaction.setUserId(request.getUserId());*/
-        System.out.println(reaction);
+        reaction.setUserId(request.getUserId());
         return reactionRepository.save(reaction);
     }
 

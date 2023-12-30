@@ -36,12 +36,12 @@ public class Reaction {
     // True = Like & False = dislike
     private Boolean is_like;
 
-    public Reaction(Boolean isLike, Long tweetId, Long userId) {
+    /*public Reaction(Boolean isLike, Long tweetId, Long userId) {
         this.setLike(isLike);
         this.setTweetId(tweetId);
         this.setUserId(userId); // TODO: da error porque dice que AppUser.getId() da null por this.userId null
-                                /* ¿por qué con tweet funciona y con user no? */
-    }
+                                /* ¿por qué con tweet funciona y con user no? *
+    }*/
 
     @CircuitBreaker (name = BACKEND_REACT)
     @TimeLimiter(name = BACKEND_REACT)
@@ -64,8 +64,8 @@ public class Reaction {
     @Bulkhead(name = BACKEND_REACT)
     @Retry(name = BACKEND_REACT)
     public void setUserId(Long userId) {
-        AppUser user = new AppUser(userId);
-        /*user.setId(userId);*/
+        AppUser user = new AppUser();
+        user.setId(userId);
         
         this.userId = user;
     }
