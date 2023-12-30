@@ -1,5 +1,7 @@
 package ar.edu.itba.cleancode.resilientbackend.usermanager;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -12,7 +14,7 @@ import jakarta.persistence.Id;
 @Entity
 public class AppUser {
 
-    private static final String BACKEND_USERS = "BACKEND_USERS";
+    private static final String BACKEND_USERS = "backendusers";
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,18 +25,23 @@ public class AppUser {
     private String birthday;
     private String password;
 
-    @CircuitBreaker (name = BACKEND_USERS)
-    @TimeLimiter(name = BACKEND_USERS)
-    @Bulkhead(name = BACKEND_USERS)
-    @Retry(name = BACKEND_USERS)
-    public Long getId() {
-        return this.userId;
+    public AppUser (Long id) {
+        this.userId = id;
     }
 
     @CircuitBreaker (name = BACKEND_USERS)
     @TimeLimiter(name = BACKEND_USERS)
     @Bulkhead(name = BACKEND_USERS)
     @Retry(name = BACKEND_USERS)
+    public Long getId() {
+        return this.userId; // TODO: ver por qué da null
+    }
+
+    @CircuitBreaker (name = BACKEND_USERS)
+    @TimeLimiter(name = BACKEND_USERS)
+    @Bulkhead(name = BACKEND_USERS)
+    @Retry(name = BACKEND_USERS)
+    @JsonIgnore
     public void setId(Long id) {
         this.userId = id;
     }
