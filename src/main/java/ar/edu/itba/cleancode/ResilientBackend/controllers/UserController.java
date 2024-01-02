@@ -5,10 +5,14 @@ import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.parser.Entity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
 import org.springframework.hateoas.Link;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,18 +60,7 @@ public class UserController {
 
     return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
     }
-/*
-    public List<AppUser> getAllUsers() {
-        return appUserRepository.findAll();
-    }
-*/
-/*
-    private static EntityModel<AppUser> emptyEntityModel() {
-        Link selfLink = linkTo(UserController.class).withSelfRel();
-        
-        return EntityModel.of(new AppUser(), selfLink);
-    }
-*/
+
     @GetMapping("/users/{id}")
     public EntityModel<AppUser> getUserById(@PathVariable Long id) {
         AppUser user = new AppUser();
@@ -77,33 +70,38 @@ public class UserController {
         } catch (Exception e) {
             System.err.println("User not found with id: " + id);
         }
+
         return appUserAssembler.toModel(user);
-        /*AppUser user;
-        try {
-            user = appUserRepository.findById(id).orElseThrow(() -> new Exception("" + id));
-            return EntityModel.of(user,
-                linkTo(methodOn(UserController.class).getUserById(id)).withSelfRel(),
-                linkTo(methodOn(UserController.class).getAllUsers()).withRel("users"));
-        } catch (Exception e) {
-            System.err.println(e); // TODO: handlear este error
-            return emptyEntityModel();
-        }*/
       }
-/*
-    public Optional<AppUser> getUserById(@PathVariable Long id) {
-        return appUserRepository.findById(id);
-    }
-*/
 
     @PostMapping("/users")
-    public AppUser addUser(@RequestBody AppUser user) {
-        return appUserRepository.save(user);
+    public ResponseEntity<EntityModel<AppUser>> addUser(@RequestBody AppUser user) {
+        AppUser newUser = appUserRepository.save(user);
+
+        return ResponseEntity
+            .created(linkTo(methodOn(UserController.class).getUserById(newUser.getId())).toUri())
+            .body(appUserAssembler.toModel(newUser));
     }
 
     @PutMapping("/users/{id}")
-    public AppUser updateUser(@PathVariable Long id, @RequestBody AppUser updatedUser) {
-        updatedUser.setId(id);
-        return appUserRepository.save(updatedUser);
+    public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody AppUser userToUpdate) {
+        /*updatedUser.setId(id);
+        return appUserRepository.save(updatedUser);*/
+        AppUser updatedUser = appUserRepository.findById(id)
+            .map(user -> {
+                user.setName(userToUpdate.getName());
+                user.setMail(userToUpdate.getMail());
+                user.setBirthday(userToUpdate.getBirthday());
+                user.setPassword(userToUpdate.getPassword());
+                return appUserRepository.save(user);
+            })
+            .orElseThrow(() -> new AppUserNotFoundException(id));
+        
+        EntityModel<AppUser> entityModel = appUserAssembler.toModel(updatedUser);
+
+        return ResponseEntity
+            .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+            .body(entityModel);
     }
 
     @DeleteMapping("/users/{id}")
