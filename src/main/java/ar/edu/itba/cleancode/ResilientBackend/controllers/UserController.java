@@ -48,11 +48,6 @@ public class UserController {
         this.appUserAssembler = appUserAssembler;
     }
 
-    @GetMapping("/users/health")
-    public String hello() {
-        return "Users up!";
-    }
-
     @GetMapping("/users")
     public CollectionModel<EntityModel<AppUser>> getAllUsers() {
         List<EntityModel<AppUser>> users = appUserRepository.findAll().stream()
@@ -85,8 +80,6 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody AppUser userToUpdate) {
-        /*updatedUser.setId(id);
-        return appUserRepository.save(updatedUser);*/
         AppUser updatedUser = appUserRepository.findById(id)
             .map(user -> {
                 user.setName(userToUpdate.getName());
@@ -105,8 +98,11 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        appUserRepository.findById(id).orElseThrow(() -> new AppUserNotFoundException(id));
         appUserRepository.deleteById(id);
+
+        return ResponseEntity.noContent().build(); // return 204 No Content
     }
 
 }
