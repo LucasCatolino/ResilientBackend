@@ -1,13 +1,13 @@
-package ar.edu.itba.cleancode.resilientbackend.usermanager;
+package ar.edu.itba.cleancode.resilientbackend.assemblers;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
-import org.apache.catalina.startup.UserConfig;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
 import ar.edu.itba.cleancode.resilientbackend.controllers.UserController;
+import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 
 @Component
 public class AppUserModelAssembler implements RepresentationModelAssembler<AppUser, EntityModel<AppUser>> {

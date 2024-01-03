@@ -14,7 +14,7 @@ public class AppUserNotFoundAdvice {
     @ResponseBody
     @ExceptionHandler(AppUserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    String employeeNotFoundHandler(AppUserNotFoundException ex) {
+    String appUserNotFoundHandler(AppUserNotFoundException ex) {
         return ex.getMessage();
     }
     

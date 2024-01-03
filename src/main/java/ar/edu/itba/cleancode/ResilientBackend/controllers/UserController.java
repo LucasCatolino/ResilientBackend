@@ -1,17 +1,12 @@
 package ar.edu.itba.cleancode.resilientbackend.controllers;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-
-import javax.swing.text.html.parser.Entity;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
-import org.springframework.hateoas.Link;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,10 +21,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import ar.edu.itba.cleancode.resilientbackend.DatabaseConnector;
-import ar.edu.itba.cleancode.resilientbackend.advicers.AppUserNotFoundAdvice;
+import ar.edu.itba.cleancode.resilientbackend.assemblers.AppUserModelAssembler;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.AppUserNotFoundException;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
-import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserModelAssembler;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
 
 
@@ -58,16 +52,16 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public EntityModel<AppUser> getUserById(@PathVariable Long id) {
-        AppUser user = new AppUser();
-        try {
+        AppUser user = new AppUser(); // TODO: ver que cuando no encuentre tiene que tirar la excepcion
+        //try {
             user = appUserRepository.findById(id)
                 .orElseThrow(() -> new AppUserNotFoundException(id));
-        } catch (Exception e) {
-            System.err.println("User not found with id: " + id);
-        }
+        //} catch (Exception e) {
+        //    System.err.println("User not found with id: " + id);
+        //}
 
         return appUserAssembler.toModel(user);
-      }
+    }
 
     @PostMapping("/users")
     public ResponseEntity<EntityModel<AppUser>> addUser(@RequestBody AppUser user) {
