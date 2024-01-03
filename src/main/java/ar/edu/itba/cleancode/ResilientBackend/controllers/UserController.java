@@ -52,13 +52,9 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public EntityModel<AppUser> getUserById(@PathVariable Long id) {
-        AppUser user = new AppUser(); // TODO: ver que cuando no encuentre tiene que tirar la excepcion
-        //try {
+        AppUser user = new AppUser();
             user = appUserRepository.findById(id)
                 .orElseThrow(() -> new AppUserNotFoundException(id));
-        //} catch (Exception e) {
-        //    System.err.println("User not found with id: " + id);
-        //}
 
         return appUserAssembler.toModel(user);
     }
