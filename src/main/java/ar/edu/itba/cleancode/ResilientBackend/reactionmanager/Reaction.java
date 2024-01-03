@@ -3,6 +3,7 @@ package ar.edu.itba.cleancode.resilientbackend.reactionmanager;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
@@ -27,6 +28,7 @@ public class Reaction {
 
     @ManyToOne
     @JoinColumn(name = "userId", nullable = false)
+    @JsonIgnoreProperties("reactions") // Ignore serialization of the AppUser's reactions property
     private AppUser userId;
 
     @ManyToOne
