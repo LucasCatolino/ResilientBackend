@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -31,6 +32,8 @@ import ar.edu.itba.cleancode.resilientbackend.reactionmanager.ReactionResponse;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRepository;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
+import ar.edu.itba.cleancode.resilientbackend.SingleLogger;
+
 
 
 @RestController
@@ -40,17 +43,20 @@ public class ReactionController {
     private final ReactionRepository reactionRepository;
     private final TweetRepository tweetRepository;
     private final AppUserRepository appUserRepository;
+    private final Logger logger;
 
     @Autowired
     public ReactionController(ReactionRepository reactionRepository, TweetRepository tweetRepository, AppUserRepository appUserRepository) {
         this.reactionRepository = reactionRepository;
         this.tweetRepository = tweetRepository;
         this.appUserRepository = appUserRepository;
+        this.logger = SingleLogger.getLogger();
     }
 
     @PostMapping("/reactions")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<EntityModel<ReactionResponse>> addReaction(@RequestBody ReactionRequest request) {
+        logger.info("Add reaction for tweet with id: " + Long.toString(request.getTweetId()));
         Long tweetId = request.getTweetId();
         Long userId = request.getUserId();
         Boolean isLike = request.getLike();
@@ -77,12 +83,15 @@ public class ReactionController {
             return ResponseEntity.created(selfLink.toUri())
                 .body(entityModel);
         } catch (Exception e) {
+            logger.severe(e.getMessage());
             throw new ReactionException(tweetId, userId);
         }
     }
 
     @GetMapping("/reactions/{tweetId}")
     public CollectionModel<EntityModel<ReactionResponse>> getAllReactionsForTweet(@PathVariable Long tweetId) {
+        logger.info("Get reactions for tweet with id: " + Long.toString(tweetId));
+
         Tweet tweet = new Tweet();
         tweet.setId(tweetId);
         
@@ -99,6 +108,7 @@ public class ReactionController {
                     })
                     .collect(Collectors.toList());
         if (reactions.isEmpty()){
+            logger.severe("No reactions were found for tweet with id: " + Long.toString(tweetId));
             throw new ReactionNotFoundException(tweetId);
         }
         return CollectionModel.of(reactions, linkTo(methodOn(ReactionController.class).getAllReactionsForTweet(tweetId)).withSelfRel());

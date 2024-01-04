@@ -29,6 +29,8 @@ import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRepository;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRequest;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
+import ar.edu.itba.cleancode.resilientbackend.SingleLogger;
+
 
 @RestController
 @RequestMapping("/api")
@@ -47,14 +49,17 @@ public class TweetController {
 
     @GetMapping("/tweets")
     public CollectionModel<EntityModel<Tweet>> getAllTweets() {
+        logger.info("Showing all tweets");
+
         List<EntityModel<Tweet>> tweets = tweetRepository.findAll().stream()
         .map(tweetAssembler::toModel).collect(Collectors.toList());
 
-    return CollectionModel.of(tweets, linkTo(methodOn(TweetController.class).getAllTweets()).withSelfRel());
+        return CollectionModel.of(tweets, linkTo(methodOn(TweetController.class).getAllTweets()).withSelfRel());
     }
 
     @GetMapping("/tweets/{id}")
     public EntityModel<Tweet> getTweetById(@PathVariable Long id) {
+        logger.info("Showing tweet with id: " + Long.toString(id));
         Tweet tweet = new Tweet();
         tweet = tweetRepository.findById(id)
             .orElseThrow(() -> new TweetNotFoundException(id));
@@ -64,13 +69,20 @@ public class TweetController {
 
     @PostMapping("/tweets")
     public ResponseEntity<EntityModel<Tweet>> addTweet(@RequestBody TweetRequest request) {
-        Tweet tweet = new Tweet();
-        AppUser user = new AppUser();
-        user.setId(request.getUserId());
-        tweet.setUserId(user);
-        tweet.setTitle(request.getTitle());
-        tweet.setContent(request.getContent());
-        Tweet newTweet = tweetRepository.save(tweet);
+        Tweet newTweet = null;
+        try {
+            Tweet tweet = new Tweet();
+            AppUser user = new AppUser();
+            user.setId(request.getUserId());
+            tweet.setUserId(user);
+            tweet.setTitle(request.getTitle());
+            tweet.setContent(request.getContent());
+            newTweet = tweetRepository.save(tweet);
+            logger.info("Creating tweet with id: " + Long.toString(newTweet.getUserId()));
+        } catch(Exception e) {
+            logger.severe("Error creating tweet with id: " + Long.toString(request.getUserId()));
+        }
+        
 
         return ResponseEntity
             .created(linkTo(methodOn(TweetController.class).getTweetById(newTweet.getId())).toUri())
@@ -80,7 +92,10 @@ public class TweetController {
     @PutMapping("/tweets/{id}")
     public ResponseEntity<?> updateTweet(@PathVariable Long id, @RequestBody TweetRequest tweetToUpdate) {
         AppUser user = new AppUser();
-        Tweet updatedTweet = tweetRepository.findById(id)
+        EntityModel<Tweet> entityModel = null;
+        try {
+
+            Tweet updatedTweet = tweetRepository.findById(id)
             .map(tweet -> {
                 user.setId(tweetToUpdate.getUserId());
                 tweet.setUserId(user);
@@ -89,8 +104,11 @@ public class TweetController {
                 return tweetRepository.save(tweet);
             })
             .orElseThrow(() -> new TweetNotFoundException(id));
-        
-        EntityModel<Tweet> entityModel = tweetAssembler.toModel(updatedTweet);
+            entityModel = tweetAssembler.toModel(updatedTweet);
+
+        } catch (Exception e) {
+            logger.severe("Error updating tweet with id: " + Long.toString(tweetToUpdate.getUserId()));
+        }
 
         return ResponseEntity
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())

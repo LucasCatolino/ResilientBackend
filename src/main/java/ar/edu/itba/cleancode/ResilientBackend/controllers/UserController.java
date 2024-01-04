@@ -46,24 +46,35 @@ public class UserController {
 
     @GetMapping("/users")
     public CollectionModel<EntityModel<AppUser>> getAllUsers() {
+        logger.info("Showing all users");
+
         List<EntityModel<AppUser>> users = appUserRepository.findAll().stream()
         .map(appUserAssembler::toModel).collect(Collectors.toList());
 
-    return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
+        return CollectionModel.of(users, linkTo(methodOn(UserController.class).getAllUsers()).withSelfRel());
     }
 
     @GetMapping("/users/{id}")
     public EntityModel<AppUser> getUserById(@PathVariable Long id) {
+        logger.info("Showing user with id: " + Long.toString(id));
+        
         AppUser user = new AppUser();
             user = appUserRepository.findById(id)
                 .orElseThrow(() -> new AppUserNotFoundException(id));
-
+        
         return appUserAssembler.toModel(user);
     }
 
     @PostMapping("/users")
     public ResponseEntity<EntityModel<AppUser>> addUser(@RequestBody AppUser user) {
-        AppUser newUser = appUserRepository.save(user);
+        AppUser newUser = null;
+
+        try {
+            newUser = appUserRepository.save(user);
+            logger.info("Creating user with name: " + user.getName());
+        } catch (Exception e) {
+            logger.severe("Error creating user with name: " + user.getName());
+        }
 
         return ResponseEntity
             .created(linkTo(methodOn(UserController.class).getUserById(newUser.getId())).toUri())
@@ -72,7 +83,10 @@ public class UserController {
 
     @PutMapping("/users/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody AppUser userToUpdate) {
-        AppUser updatedUser = appUserRepository.findById(id)
+        AppUser updatedUser = null;
+        logger.info("Update user with userId: " + Long.toString(id));
+        try {
+        updatedUser = appUserRepository.findById(id)
             .map(user -> {
                 user.setName(userToUpdate.getName());
                 user.setMail(userToUpdate.getMail());
@@ -81,9 +95,12 @@ public class UserController {
                 return appUserRepository.save(user);
             })
             .orElseThrow(() -> new AppUserNotFoundException(id));
+        } catch(Exception e) {
+            logger.severe(e.getMessage());
+        }
         
         EntityModel<AppUser> entityModel = appUserAssembler.toModel(updatedUser);
-
+        
         return ResponseEntity
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body(entityModel);
@@ -91,7 +108,7 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
-        logger.info("Delete user with userId: " + id);
+        logger.info("Delete user with userId: " + Long.toString(id));
         appUserRepository.findById(id).orElseThrow(() -> new AppUserNotFoundException(id));
         try {
             appUserRepository.deleteById(id);

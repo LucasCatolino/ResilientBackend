@@ -5,6 +5,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
@@ -31,6 +32,8 @@ import ar.edu.itba.cleancode.resilientbackend.exceptions.TweetNotFoundException;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRepository;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
+import ar.edu.itba.cleancode.resilientbackend.SingleLogger;
+
 
 
 @RestController
@@ -40,17 +43,20 @@ public class CommentController {
     private final CommentRepository commentRepository;
     private final TweetRepository tweetRepository;
     private final AppUserRepository appUserRepository;
+    private final Logger logger;
+
 
     @Autowired
     public CommentController(CommentRepository commentRepository, TweetRepository tweetRepository, AppUserRepository appUserRepository) {
         this.commentRepository = commentRepository;
         this.tweetRepository = tweetRepository;
         this.appUserRepository = appUserRepository;
+        this.logger = SingleLogger.getLogger();  
     }
 
     @PostMapping("/comments")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<EntityModel<CommentResponse>> addReaction(@RequestBody CommentRequest request) {
+    public ResponseEntity<EntityModel<CommentResponse>> addComment(@RequestBody CommentRequest request) {
         Long tweetId = request.getTweetId();
         Long userId = request.getUserId();
         String commentContent = request.getComment();
@@ -62,6 +68,7 @@ public class CommentController {
         comment.setTweetId(tweetId);
         comment.setUserId(userId);
         comment.setComment(commentContent);
+        logger.info("Add comment for tweet with id: " + Long.toString(tweetId));
 
         try {
             commentRepository.save(comment);
@@ -77,6 +84,7 @@ public class CommentController {
             return ResponseEntity.created(selfLink.toUri())
                 .body(entityModel);
         } catch (Exception e) {
+            logger.severe(e.getMessage());
             throw new CommentException(tweetId, userId);
         }
     }
@@ -84,6 +92,8 @@ public class CommentController {
 
     @GetMapping("/comments/{tweetId}")
     public CollectionModel<EntityModel<CommentResponse>> getAllCommentsForTweet(@PathVariable Long tweetId) {
+        logger.info("Get comments for tweet with id: " + Long.toString(tweetId));
+
         Tweet tweet = new Tweet();
         tweet.setId(tweetId);
         
@@ -100,6 +110,8 @@ public class CommentController {
                     })
                     .collect(Collectors.toList());
         if (comments.isEmpty()){
+            logger.severe("No comments were found for tweet with id: " + Long.toString(tweetId));
+
             throw new CommentNotFoundException(tweetId);
         }
         return CollectionModel.of(comments, linkTo(methodOn(CommentController.class).getAllCommentsForTweet(tweetId)).withSelfRel());
