@@ -1,6 +1,7 @@
 package ar.edu.itba.cleancode.resilientbackend.controllers;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import ar.edu.itba.cleancode.resilientbackend.SingleLogger;
 import ar.edu.itba.cleancode.resilientbackend.assemblers.AppUserModelAssembler;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.AppUserNotFoundException;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.CouldNotDeleteUserException;
@@ -33,11 +35,13 @@ public class UserController {
 
     private final AppUserRepository appUserRepository;
     private final AppUserModelAssembler appUserAssembler;
+    private final Logger logger;
 
     @Autowired
     public UserController(AppUserRepository appUserRepository, AppUserModelAssembler appUserAssembler) {
         this.appUserRepository = appUserRepository;
         this.appUserAssembler = appUserAssembler;
+        this.logger = SingleLogger.getLogger();
     }
 
     @GetMapping("/users")
@@ -87,11 +91,12 @@ public class UserController {
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+        logger.info("Delete user with userId: " + id);
         appUserRepository.findById(id).orElseThrow(() -> new AppUserNotFoundException(id));
         try {
             appUserRepository.deleteById(id);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.severe(e.getMessage());
             throw new CouldNotDeleteUserException(id);
         }
 

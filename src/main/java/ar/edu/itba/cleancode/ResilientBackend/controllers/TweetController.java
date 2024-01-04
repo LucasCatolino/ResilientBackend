@@ -4,6 +4,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import ar.edu.itba.cleancode.resilientbackend.SingleLogger;
 import ar.edu.itba.cleancode.resilientbackend.assemblers.TweetModelAssembler;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.CouldNotDeleteTweetException;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.TweetNotFoundException;
@@ -34,11 +36,13 @@ public class TweetController {
 
     private final TweetRepository tweetRepository;
     private final TweetModelAssembler tweetAssembler;
+    private final Logger logger;
 
     @Autowired
     public TweetController(TweetRepository tweetRepository, TweetModelAssembler tweetAssembler) {
         this.tweetRepository = tweetRepository;
         this.tweetAssembler = tweetAssembler;
+        this.logger = SingleLogger.getLogger();
     }
 
     @GetMapping("/tweets")
@@ -95,11 +99,12 @@ public class TweetController {
 
     @DeleteMapping("/tweets/{id}")
     public ResponseEntity<?> deleteTweet(@PathVariable Long id) {
+        logger.info("Delete tweet with tweetId: " + id);
         tweetRepository.findById(id).orElseThrow(() -> new TweetNotFoundException(id));
         try {
             tweetRepository.deleteById(id);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            logger.severe(e.getMessage());
             throw new CouldNotDeleteTweetException(id);
         }
 
