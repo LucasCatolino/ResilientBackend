@@ -9,7 +9,6 @@ import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -37,13 +36,6 @@ public class Reaction {
 
     // True = Like & False = dislike
     private Boolean is_like;
-
-    /*public Reaction(Boolean isLike, Long tweetId, Long userId) {
-        this.setLike(isLike);
-        this.setTweetId(tweetId);
-        this.setUserId(userId); // TODO: da error porque dice que AppUser.getId() da null por this.userId null
-                                /* ¿por qué con tweet funciona y con user no? *
-    }*/
 
     @CircuitBreaker (name = BACKEND_REACT)
     @TimeLimiter(name = BACKEND_REACT)
