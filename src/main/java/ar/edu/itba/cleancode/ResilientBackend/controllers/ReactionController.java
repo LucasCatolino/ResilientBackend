@@ -57,7 +57,6 @@ public class ReactionController {
         Long tweetId = request.getTweetId();
         Long userId = request.getUserId();
         Boolean isLike = request.getLike();
-
         
         tweetRepository.findById(tweetId).orElseThrow(() -> new TweetNotFoundException(tweetId));
         appUserRepository.findById(userId).orElseThrow(() -> new AppUserNotFoundException(userId));
