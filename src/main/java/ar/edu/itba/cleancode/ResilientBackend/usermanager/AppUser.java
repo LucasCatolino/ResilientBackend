@@ -28,7 +28,7 @@ public class AppUser {
     @Bulkhead(name = BACKEND_USERS)
     @Retry(name = BACKEND_USERS)
     public Long getId() {
-        return this.userId; // TODO: ver por qué da null
+        return this.userId;
     }
 
     @CircuitBreaker (name = BACKEND_USERS)
