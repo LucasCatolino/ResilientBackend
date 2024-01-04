@@ -84,7 +84,7 @@ public class CommentController {
             return ResponseEntity.created(selfLink.toUri())
                 .body(entityModel);
         } catch (Exception e) {
-            logger.severe(e.getMessage());
+            logger.severe("Could not add comment for tweet: " + Long.toString(tweetId) + "by user: " + Long.toString(userId));
             throw new CommentException(tweetId, userId);
         }
     }

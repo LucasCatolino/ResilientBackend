@@ -83,7 +83,7 @@ public class ReactionController {
             return ResponseEntity.created(selfLink.toUri())
                 .body(entityModel);
         } catch (Exception e) {
-            logger.severe(e.getMessage());
+            logger.severe("Error adding reaction to tweet with id: " + Long.toString(tweetId));
             throw new ReactionException(tweetId, userId);
         }
     }

@@ -122,7 +122,7 @@ public class TweetController {
         try {
             tweetRepository.deleteById(id);
         } catch (Exception e) {
-            logger.severe(e.getMessage());
+            logger.severe("Error deleting tweet with id: " + Long.toString(id));
             throw new CouldNotDeleteTweetException(id);
         }
 

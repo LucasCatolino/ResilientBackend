@@ -96,7 +96,7 @@ public class UserController {
             })
             .orElseThrow(() -> new AppUserNotFoundException(id));
         } catch(Exception e) {
-            logger.severe(e.getMessage());
+            logger.severe("Error updating user with id: " + id);
         }
         
         EntityModel<AppUser> entityModel = appUserAssembler.toModel(updatedUser);
@@ -113,7 +113,7 @@ public class UserController {
         try {
             appUserRepository.deleteById(id);
         } catch (Exception e) {
-            logger.severe(e.getMessage());
+            logger.severe("Could not delete user with id: " + Long.toString(id));
             throw new CouldNotDeleteUserException(id);
         }
 
