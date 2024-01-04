@@ -1,9 +1,17 @@
 package ar.edu.itba.cleancode.resilientbackend.controllers;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +24,14 @@ import ar.edu.itba.cleancode.resilientbackend.DatabaseConnector;
 import ar.edu.itba.cleancode.resilientbackend.commentmanager.Comment;
 import ar.edu.itba.cleancode.resilientbackend.commentmanager.CommentRepository;
 import ar.edu.itba.cleancode.resilientbackend.commentmanager.CommentRequest;
+import ar.edu.itba.cleancode.resilientbackend.commentmanager.CommentResponse;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.AppUserNotFoundException;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.CommentException;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.CommentNotFoundException;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.TweetNotFoundException;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
+import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRepository;
+import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
 
 
 @RestController
@@ -25,40 +40,72 @@ public class CommentController {
         
     private final DatabaseConnector databaseConnector;
     private final CommentRepository commentRepository;
+    private final TweetRepository tweetRepository;
+    private final AppUserRepository appUserRepository;
 
     @Autowired
-    public CommentController(DatabaseConnector databaseConnector, CommentRepository commentRepository) {
+    public CommentController(DatabaseConnector databaseConnector, CommentRepository commentRepository, TweetRepository tweetRepository, AppUserRepository appUserRepository) {
         this.databaseConnector = databaseConnector;
         this.commentRepository = commentRepository;
-    }
-
-    @GetMapping("/comments/health")
-    public String hello() {
-        return "Comments up!";
+        this.tweetRepository = tweetRepository;
+        this.appUserRepository = appUserRepository;
     }
 
     @PostMapping("/comments")
     @ResponseStatus(HttpStatus.OK)
-    public String addReaction(@RequestBody CommentRequest request) {
+    public ResponseEntity<EntityModel<CommentResponse>> addReaction(@RequestBody CommentRequest request) {
+        Long tweetId = request.getTweetId();
+        Long userId = request.getUserId();
+        String commentContent = request.getComment();
+
+        tweetRepository.findById(tweetId).orElseThrow(() -> new TweetNotFoundException(tweetId));
+        appUserRepository.findById(userId).orElseThrow(() -> new AppUserNotFoundException(userId));
+
         Comment comment = new Comment();
-        comment.setComment(request.getComment());
-        comment.setTweetId(request.getTweetId());
-        comment.setUserId(request.getUserId());
+        comment.setTweetId(tweetId);
+        comment.setUserId(userId);
+        comment.setComment(commentContent);
+
         try {
             commentRepository.save(comment);
+
+            CommentResponse response = new CommentResponse(
+                    userId, tweetId, commentContent);
+
+            EntityModel<CommentResponse> entityModel = EntityModel.of(response);
+
+            Link selfLink = linkTo(methodOn(CommentController.class).getAllCommentsForTweet(tweetId)).withSelfRel();
+            entityModel.add(selfLink);
+
+            return ResponseEntity.created(selfLink.toUri())
+                .body(entityModel);
         } catch (Exception e) {
-            throw new Error("Error al guardar");
+            throw new CommentException(tweetId, userId);
         }
-        return "Comment saved";
     }
 
 
     @GetMapping("/comments/{tweetId}")
-    public List<Comment> getAllCommentsForTweet(@PathVariable Long tweetId) {
+    public CollectionModel<EntityModel<CommentResponse>> getAllCommentsForTweet(@PathVariable Long tweetId) {
         Tweet tweet = new Tweet();
         tweet.setId(tweetId);
-
-        return commentRepository.findCommentByTweetId(tweet); // TODO: cambiar la respuesta, que sea solo el tweet y los comentarios con id de usuario y talv ez nombre de usuario, pero no el usuario completo
+        
+        List<EntityModel<CommentResponse>> comments =
+            commentRepository.findCommentByTweetId(tweet).stream()
+                    .map(comment -> {
+                        CommentResponse response = new CommentResponse(
+                                comment.getTweetId().getId(),
+                                comment.getUserId().getId(),
+                                comment.getComment()
+                        );
+                        return EntityModel.of(response,
+                                linkTo(methodOn(CommentController.class).getAllCommentsForTweet(tweetId)).withSelfRel());
+                    })
+                    .collect(Collectors.toList());
+        if (comments.isEmpty()){
+            throw new CommentNotFoundException(tweetId);
+        }
+        return CollectionModel.of(comments, linkTo(methodOn(CommentController.class).getAllCommentsForTweet(tweetId)).withSelfRel());
     }
 
 }
