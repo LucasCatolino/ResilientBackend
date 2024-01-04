@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
-import ar.edu.itba.cleancode.resilientbackend.DatabaseConnector;
 import ar.edu.itba.cleancode.resilientbackend.assemblers.AppUserModelAssembler;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.AppUserNotFoundException;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.CouldNotDeleteUserException;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
 
@@ -31,13 +31,11 @@ import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
 @RequestMapping("/api")
 public class UserController {
 
-    private final DatabaseConnector databaseConnector;
     private final AppUserRepository appUserRepository;
     private final AppUserModelAssembler appUserAssembler;
 
     @Autowired
-    public UserController(DatabaseConnector databaseConnector, AppUserRepository appUserRepository, AppUserModelAssembler appUserAssembler) {
-        this.databaseConnector = databaseConnector;
+    public UserController(AppUserRepository appUserRepository, AppUserModelAssembler appUserAssembler) {
         this.appUserRepository = appUserRepository;
         this.appUserAssembler = appUserAssembler;
     }
@@ -90,7 +88,12 @@ public class UserController {
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         appUserRepository.findById(id).orElseThrow(() -> new AppUserNotFoundException(id));
-        appUserRepository.deleteById(id);
+        try {
+            appUserRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new CouldNotDeleteUserException(id);
+        }
 
         return ResponseEntity.noContent().build(); // return 204 No Content
     }

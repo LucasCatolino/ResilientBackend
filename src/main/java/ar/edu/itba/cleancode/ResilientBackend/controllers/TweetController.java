@@ -4,7 +4,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import ar.edu.itba.cleancode.resilientbackend.DatabaseConnector;
 import ar.edu.itba.cleancode.resilientbackend.assemblers.TweetModelAssembler;
-import ar.edu.itba.cleancode.resilientbackend.exceptions.AppUserNotFoundException;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.CouldNotDeleteTweetException;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.TweetNotFoundException;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRepository;
@@ -34,13 +32,11 @@ import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 @RequestMapping("/api")
 public class TweetController {
 
-    private final DatabaseConnector databaseConnector;
     private final TweetRepository tweetRepository;
     private final TweetModelAssembler tweetAssembler;
 
     @Autowired
-    public TweetController(DatabaseConnector databaseConnector, TweetRepository tweetRepository, TweetModelAssembler tweetAssembler) {
-        this.databaseConnector = databaseConnector;
+    public TweetController(TweetRepository tweetRepository, TweetModelAssembler tweetAssembler) {
         this.tweetRepository = tweetRepository;
         this.tweetAssembler = tweetAssembler;
     }
@@ -52,9 +48,6 @@ public class TweetController {
 
     return CollectionModel.of(tweets, linkTo(methodOn(TweetController.class).getAllTweets()).withSelfRel());
     }
-//  public List<Tweet> getAllTweets() {
-//      return tweetRepository.findAll();
-//  }
 
     @GetMapping("/tweets/{id}")
     public EntityModel<Tweet> getTweetById(@PathVariable Long id) {
@@ -64,9 +57,6 @@ public class TweetController {
 
         return tweetAssembler.toModel(tweet);
     }
-//  public Optional<Tweet> getTweetById(@PathVariable Long id) {
-//      return tweetRepository.findById(id);
-//  }
 
     @PostMapping("/tweets")
     public ResponseEntity<EntityModel<Tweet>> addTweet(@RequestBody TweetRequest request) {
@@ -82,16 +72,6 @@ public class TweetController {
             .created(linkTo(methodOn(TweetController.class).getTweetById(newTweet.getId())).toUri())
             .body(tweetAssembler.toModel(newTweet));
     }
-//  public Tweet addTweet(@RequestBody TweetRequest request) {
-//      Tweet tweet = new Tweet();
-//      AppUser user = new AppUser();
-//      user.setId(request.getUserId());
-//      tweet.setUserId(user);
-//      tweet.setTitle(request.getTitle());
-//      tweet.setContent(request.getContent());
-//      
-//      return tweetRepository.save(tweet);
-//  }
 
     @PutMapping("/tweets/{id}")
     public ResponseEntity<?> updateTweet(@PathVariable Long id, @RequestBody TweetRequest tweetToUpdate) {
@@ -112,27 +92,18 @@ public class TweetController {
             .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
             .body(entityModel);
     }
-//  public Tweet updateTweet(@PathVariable Long id, @RequestBody TweetRequest request) {
-//      Tweet updatedTweet = new Tweet();
-//      updatedTweet.setId(id);
-//      AppUser user = new AppUser();
-//      user.setId(request.getUserId());
-//      updatedTweet.setUserId(user);
-//      updatedTweet.setTitle(request.getTitle());
-//      updatedTweet.setContent(request.getContent());
-//      
-//      return tweetRepository.save(updatedTweet);
-//  }
 
     @DeleteMapping("/tweets/{id}")
     public ResponseEntity<?> deleteTweet(@PathVariable Long id) {
         tweetRepository.findById(id).orElseThrow(() -> new TweetNotFoundException(id));
-        tweetRepository.deleteById(id);
+        try {
+            tweetRepository.deleteById(id);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new CouldNotDeleteTweetException(id);
+        }
 
         return ResponseEntity.noContent().build(); // return 204 No Content
     }
-//  public void deleteTweet(@PathVariable Long id) {
-//      tweetRepository.deleteById(id);
-//  }
 
 }
