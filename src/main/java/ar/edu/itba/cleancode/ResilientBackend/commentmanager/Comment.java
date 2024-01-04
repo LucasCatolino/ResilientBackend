@@ -2,8 +2,6 @@ package ar.edu.itba.cleancode.resilientbackend.commentmanager;
 
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;

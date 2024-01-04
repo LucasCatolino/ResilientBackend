@@ -2,7 +2,6 @@ package ar.edu.itba.cleancode.resilientbackend.reactionmanager;
 
 import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUser;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
@@ -10,6 +9,7 @@ import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

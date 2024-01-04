@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import ar.edu.itba.cleancode.resilientbackend.DatabaseConnector;
 import ar.edu.itba.cleancode.resilientbackend.commentmanager.Comment;
 import ar.edu.itba.cleancode.resilientbackend.commentmanager.CommentRepository;
 import ar.edu.itba.cleancode.resilientbackend.commentmanager.CommentRequest;
@@ -38,14 +37,12 @@ import ar.edu.itba.cleancode.resilientbackend.usermanager.AppUserRepository;
 @RequestMapping("/api")
 public class CommentController {
         
-    private final DatabaseConnector databaseConnector;
     private final CommentRepository commentRepository;
     private final TweetRepository tweetRepository;
     private final AppUserRepository appUserRepository;
 
     @Autowired
-    public CommentController(DatabaseConnector databaseConnector, CommentRepository commentRepository, TweetRepository tweetRepository, AppUserRepository appUserRepository) {
-        this.databaseConnector = databaseConnector;
+    public CommentController(CommentRepository commentRepository, TweetRepository tweetRepository, AppUserRepository appUserRepository) {
         this.commentRepository = commentRepository;
         this.tweetRepository = tweetRepository;
         this.appUserRepository = appUserRepository;

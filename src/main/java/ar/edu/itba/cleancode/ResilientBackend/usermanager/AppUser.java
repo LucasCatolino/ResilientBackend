@@ -1,7 +1,5 @@
 package ar.edu.itba.cleancode.resilientbackend.usermanager;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
