@@ -97,6 +97,7 @@ public class UserController {
             .orElseThrow(() -> new AppUserNotFoundException(id));
         } catch(Exception e) {
             logger.severe("Error updating user with id: " + id);
+            throw new AppUserNotFoundException(id);
         }
         
         EntityModel<AppUser> entityModel = appUserAssembler.toModel(updatedUser);

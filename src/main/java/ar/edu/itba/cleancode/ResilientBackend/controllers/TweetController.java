@@ -25,6 +25,7 @@ import ar.edu.itba.cleancode.resilientbackend.SingleLogger;
 import ar.edu.itba.cleancode.resilientbackend.assemblers.TweetModelAssembler;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.CouldNotDeleteTweetException;
 import ar.edu.itba.cleancode.resilientbackend.exceptions.TweetNotFoundException;
+import ar.edu.itba.cleancode.resilientbackend.exceptions.AppUserNotFoundException;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.Tweet;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRepository;
 import ar.edu.itba.cleancode.resilientbackend.tweetmanager.TweetRequest;
@@ -80,7 +81,8 @@ public class TweetController {
             newTweet = tweetRepository.save(tweet);
             logger.info("Creating tweet with id: " + Long.toString(newTweet.getUserId()));
         } catch(Exception e) {
-            logger.severe("Error creating tweet with id: " + Long.toString(request.getUserId()));
+            logger.severe("Error creating tweet for user with id: " + Long.toString(request.getUserId()));
+            throw new AppUserNotFoundException(request.getUserId());
         }
         
 
@@ -108,6 +110,7 @@ public class TweetController {
 
         } catch (Exception e) {
             logger.severe("Error updating tweet with id: " + Long.toString(tweetToUpdate.getUserId()));
+            throw new TweetNotFoundException(id);
         }
 
         return ResponseEntity
