@@ -42,6 +42,12 @@ The project follows a specific structure:
 
 - **src > main > ... > resilientbackend > ResilientBackendApplication.java:** Serves as the starting point of the application, with the `application.run(ResilientBackendApplication.class, args)` method.
 
+- **src > main > ... > resilientbackend > exceptions:** Contains the exceptions definitions for each of the classes used along the application.
+
+- **src > main > ... > resilientbackend > advicers:** Contains the handlers for each of the defined exceptions.
+
+- **src > main > ... > resilientbackend > assemblers:** Houses classes to create EntityModels in a cleaner way.
+
 ## Database Initialization
 
 Upon application startup, the system checks whether the required tables exist in the PostgreSQL database. If they do not exist, the tables are created; otherwise, the existing tables are utilized.
